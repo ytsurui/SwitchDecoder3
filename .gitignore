@@ -1,0 +1,9 @@
+*.kicad_pcb-bak
+*.sch-bak
+archive/
+*/.vs/
+*/Debug/
+*/Release/
+*-backups/
+*.pdf
+*.zip
