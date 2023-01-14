@@ -25,7 +25,7 @@ uint8_t turnOnTime[2];
 uint8_t turnOnDelayTime[2];
 uint8_t configureBits;
 
-#define FIRMWARE_VERSION_CODE	1
+#define FIRMWARE_VERSION_CODE	2
 #define MANUFACTURE_ID	13
 
 uint8_t addr_1byte_write_cache;
