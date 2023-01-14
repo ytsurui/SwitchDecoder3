@@ -66,17 +66,17 @@ void setSwitch(uint8_t dir, uint16_t ms)
 		PORTA.OUTCLR = PIN4_bm;
 		PORTA.OUTCLR = PIN5_bm;
 		if (dir == SW_DIR_CLOSE) {
-			PORTA.OUTSET = PIN5_bm;
-		} else if (dir == SW_DIR_THROWN) {
 			PORTA.OUTSET = PIN4_bm;
+		} else if (dir == SW_DIR_THROWN) {
+			PORTA.OUTSET = PIN5_bm;
 		}
 	} else {
 		PORTA.OUTCLR = PIN4_bm;
 		PORTA.OUTCLR = PIN5_bm;
 		if (dir == SW_DIR_CLOSE) {
-			PORTA.OUTSET = PIN4_bm;
-		} else if (dir == SW_DIR_THROWN) {
 			PORTA.OUTSET = PIN5_bm;
+		} else if (dir == SW_DIR_THROWN) {
+			PORTA.OUTSET = PIN4_bm;
 		}
 	}
 	
