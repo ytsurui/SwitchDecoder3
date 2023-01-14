@@ -14,7 +14,7 @@ uint16_t delayTimer = 0;
 
 uint8_t basicACKflag = 0;
 uint8_t basicACKcounter = 0;
-#define BASIC_ACK_COUNT_MAX	3
+#define BASIC_ACK_COUNT_MAX	10
 
 
 void initSWdriver(void) {

@@ -96,6 +96,7 @@ void dccProgPageMode(uint8_t packetLength, uint8_t packetData[])
 		packetProgCache[1] = packetData[1];
 		packetProgCache[2] = packetData[2];
 		clearBasicACKflag();
+		basicACKoff();
 	}
 	
 }
