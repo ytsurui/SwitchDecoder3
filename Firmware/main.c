@@ -27,11 +27,17 @@ int main(void)
 	startWDT();
 	initRTC();
 	
-	initConfig();
 	initProgPort();
-	
 	initDCCpoller();
 	initSWdriver();
+	
+	initConfig();
+	
+	while (loadCVevent()) {
+		clearWDT();
+		dccPacketShifter(&dccRecvPacketLength, dccRecvPacketCache);
+	}
+	
 	
     /* Replace with your application code */
     while (1) 

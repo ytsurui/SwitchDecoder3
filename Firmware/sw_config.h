@@ -6,6 +6,9 @@
  */ 
 
 void initConfig(void);
+
+uint8_t loadCVevent(void);
+
 uint8_t read_cv_byte(uint16_t CVnum);
 void write_cv_byte(uint16_t CVnum, uint8_t data);
 

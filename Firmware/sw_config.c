@@ -32,6 +32,8 @@ uint8_t addr_1byte_write_cache;
 uint8_t addr_2byte_write_cache;
 uint8_t lastStat_cache;
 
+uint8_t cvReadCount;
+
 uint8_t read_cv_raw(uint8_t CVnum)
 {
 	return (eeprom_read_byte(val + CVnum));
@@ -63,7 +65,7 @@ void initConfig(void)
 {
 	uint8_t cfgInfo;
 	
-	eeprom_busy_wait();
+	//eeprom_busy_wait();
 	
 	cfgInfo = read_cv_raw(0);
 	
@@ -72,6 +74,7 @@ void initConfig(void)
 		eeprom_busy_wait();
 	}
 	
+	/*
 	addrInfo[0] = read_cv_raw(1);
 	addrInfo[1] = read_cv_raw(2);
 	turnOnTime[0] = read_cv_raw(3);
@@ -79,7 +82,33 @@ void initConfig(void)
 	turnOnDelayTime[0] = read_cv_raw(5);
 	turnOnDelayTime[1] = read_cv_raw(6);
 	configureBits = read_cv_raw(7);
+	*/	
+	cvReadCount = 0;
+}
+
+uint8_t loadCVevent(void)
+{
+	if (cvReadCount == 0) {
+		addrInfo[0] = read_cv_raw(1);
+	} else if (cvReadCount == 1) {
+		addrInfo[1] = read_cv_raw(2);
+	} else if (cvReadCount == 2) {
+		turnOnTime[0] = read_cv_raw(3);
+	} else if (cvReadCount == 3) {
+		turnOnTime[1] = read_cv_raw(4);
+	} else if (cvReadCount == 4) {
+		turnOnDelayTime[0] = read_cv_raw(5);
+	} else if (cvReadCount == 5) {
+		turnOnDelayTime[1] = read_cv_raw(6);
+	} else if (cvReadCount == 6) {
+		configureBits = read_cv_raw(7);
+	}
 	
+	cvReadCount++;
+	if (cvReadCount > 6) {
+		return 0;
+	} 
+	return 1;
 }
 
 uint8_t read_cv_byte(uint16_t CVnum)
