@@ -11,6 +11,7 @@
 void initSWdriver(void);
 void clkReceiverSWdriver(void);
 void setSwitch(uint8_t dir, uint16_t ms);
+void toggleSwitch(uint16_t ms);
 
 void basicACK();
 void basicACKoff();

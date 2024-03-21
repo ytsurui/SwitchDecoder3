@@ -10,3 +10,5 @@ void clkReceiverProgPort(void);
 void taskProgMode(void);
 uint8_t readProgMode(void);
 void clearProgMode(void);
+
+uint8_t readLockStat(void);
