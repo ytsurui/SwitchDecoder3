@@ -18,6 +18,8 @@ uint8_t __attribute__((section(".eeprom"))) val[] =
 	0x00,	// Turn-On Delay Time Low-Byte
 	0x00,	// Turn-On Delay Time High-Byte
 	0x00,	// Configure Bits
+	0x88,	// Lock Time Low-Byte
+	0x13,	// Lock Time High-Byte	(0x1388 = 5000 / 5.000sec)
 };
 
 uint8_t addrInfo[2];
@@ -25,7 +27,9 @@ uint8_t turnOnTime[2];
 uint8_t turnOnDelayTime[2];
 uint8_t configureBits;
 
-#define FIRMWARE_VERSION_CODE	2
+uint8_t SwitchLockTime[2];
+
+#define FIRMWARE_VERSION_CODE	4
 #define MANUFACTURE_ID	13
 
 uint8_t addr_1byte_write_cache;
@@ -54,6 +58,8 @@ void initCV(void)
 	write_eeprom(5, 0x00);
 	write_eeprom(6, 0x00);
 	write_eeprom(7, 0x00);
+	write_eeprom(8, 0x88);
+	write_eeprom(9, 0x13);
 	
 	// Write Init Flag
 	write_eeprom(0, 0);
@@ -102,10 +108,14 @@ uint8_t loadCVevent(void)
 		turnOnDelayTime[1] = read_cv_raw(6);
 	} else if (cvReadCount == 6) {
 		configureBits = read_cv_raw(7);
+	} else if (cvReadCount == 7) {
+		SwitchLockTime[0] = read_cv_raw(8);
+	} else if (cvReadCount == 8) {
+		SwitchLockTime[1] = read_cv_raw(9);
 	}
 	
 	cvReadCount++;
-	if (cvReadCount > 6) {
+	if (cvReadCount > 8) {
 		return 0;
 	} 
 	return 1;
@@ -132,6 +142,10 @@ uint8_t read_cv_byte(uint16_t CVnum)
 			return turnOnDelayTime[1];
 		case 33:
 			return configureBits;
+		case 39:
+			return SwitchLockTime[0];
+		case 40:
+			return SwitchLockTime[1];
 	}
 	
 	return 0xFF;
@@ -187,6 +201,16 @@ void write_cv_byte(uint16_t CVnum, uint8_t data)
 			configureBits = data;
 			eepromAddr = 7;
 			break;
+		case 39:
+			// Switch Lock Time LSB
+			SwitchLockTime[0] = data;
+			eepromAddr = 8;
+			break;
+		case 40:
+			// Switch Lock Time MSB
+			SwitchLockTime[1] = data;
+			eepromAddr = 9;
+			break;
 	}
 	
 	if (eepromAddr > 0) {
@@ -216,6 +240,7 @@ uint8_t write_addr(uint8_t addr1_data, uint8_t addr2_data)
 	
 	stat = addr2_data & 0x01;
 	addr2_data &= 0xFE;
+	addr2_data |= 0x08;
 		
 	if ((addr1_data == addr_1byte_write_cache) && (addr2_data == addr_2byte_write_cache)) {
 		if (stat != lastStat_cache) {
@@ -254,4 +279,9 @@ uint16_t getTurnOnDelayTime(void)
 uint8_t getConfigureBytes(void)
 {
 	return configureBits;
+}
+
+uint16_t getLockTime(void)
+{
+	return (uint16_t)(SwitchLockTime[1] << 8) + SwitchLockTime[0];
 }

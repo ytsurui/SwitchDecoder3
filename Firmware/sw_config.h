@@ -19,5 +19,15 @@ uint16_t getTurnOnTime(void);
 uint16_t getTurnOnDelayTime(void);
 uint8_t getConfigureBytes(void);
 
+uint16_t getLockTime(void);
+
 #define CONFIG_BIT_REVERSE			0x01
 #define CONFIG_BIT_DISABLEPROGPORT	0x02
+
+#define CONFIG_LOCKMODE_MASK	0x1C
+
+#define CONFIG_LOCKMODE_DISABLE 0
+#define CONFIG_LOCKMODE_LOCK	4
+#define CONFIG_LOCKMODE_AUTO_C	8
+#define CONFIG_LOCKMODE_AUTO_T	12
+#define CONFIG_LOCKMODE_AUTOCHANGE	28
