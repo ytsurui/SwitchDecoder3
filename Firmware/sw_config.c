@@ -18,8 +18,10 @@ uint8_t __attribute__((section(".eeprom"))) val[] =
 	0x00,	// Turn-On Delay Time Low-Byte
 	0x00,	// Turn-On Delay Time High-Byte
 	0x00,	// Configure Bits
-	0x88,	// Lock Time Low-Byte
-	0x13,	// Lock Time High-Byte	(0x1388 = 5000 / 5.000sec)
+	0xD0,	// Lock Time Low-Byte
+	0x07,	// Lock Time High-Byte	(0x07D0 = 3000 / 2.000sec)
+	0x88,	// Switch Auto-Move Time Low-Byte
+	0x13,	// Switch Auto-Move Time High-Byte (0x1388 = 5000 / 5.000sec)
 };
 
 uint8_t addrInfo[2];
@@ -28,6 +30,7 @@ uint8_t turnOnDelayTime[2];
 uint8_t configureBits;
 
 uint8_t SwitchLockTime[2];
+uint8_t SwitchAutoMoveTime[2];
 
 #define FIRMWARE_VERSION_CODE	4
 #define MANUFACTURE_ID	13
@@ -58,8 +61,10 @@ void initCV(void)
 	write_eeprom(5, 0x00);
 	write_eeprom(6, 0x00);
 	write_eeprom(7, 0x00);
-	write_eeprom(8, 0x88);
-	write_eeprom(9, 0x13);
+	write_eeprom(8, 0xD0);
+	write_eeprom(9, 0x07);
+	write_eeprom(10, 0x88);
+	write_eeprom(11, 0x13);
 	
 	// Write Init Flag
 	write_eeprom(0, 0);
@@ -112,10 +117,14 @@ uint8_t loadCVevent(void)
 		SwitchLockTime[0] = read_cv_raw(8);
 	} else if (cvReadCount == 8) {
 		SwitchLockTime[1] = read_cv_raw(9);
+	} else if (cvReadCount == 9) {
+		SwitchAutoMoveTime[0] = read_cv_raw(10);
+	} else if (cvReadCount == 10) {
+		SwitchAutoMoveTime[1] = read_cv_raw(11);
 	}
 	
 	cvReadCount++;
-	if (cvReadCount > 8) {
+	if (cvReadCount > 10) {
 		return 0;
 	} 
 	return 1;
@@ -146,6 +155,10 @@ uint8_t read_cv_byte(uint16_t CVnum)
 			return SwitchLockTime[0];
 		case 40:
 			return SwitchLockTime[1];
+		case 41:
+			return SwitchAutoMoveTime[0];
+		case 42:
+			return SwitchAutoMoveTime[1];
 	}
 	
 	return 0xFF;
@@ -210,6 +223,15 @@ void write_cv_byte(uint16_t CVnum, uint8_t data)
 			// Switch Lock Time MSB
 			SwitchLockTime[1] = data;
 			eepromAddr = 9;
+			break;
+		case 41:
+			// Switch Auto-Move Type LSB
+			SwitchAutoMoveTime[0] = data;
+			eepromAddr = 10;
+			break;
+		case 42:
+			SwitchAutoMoveTime[1] = data;
+			eepromAddr = 11;
 			break;
 	}
 	
@@ -284,4 +306,9 @@ uint8_t getConfigureBytes(void)
 uint16_t getLockTime(void)
 {
 	return (uint16_t)(SwitchLockTime[1] << 8) + SwitchLockTime[0];
+}
+
+uint16_t getAutoMoveTime(void)
+{
+	return (uint16_t)(SwitchAutoMoveTime[1] << 8) + SwitchAutoMoveTime[0];
 }

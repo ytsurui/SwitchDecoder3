@@ -14,6 +14,7 @@ uint16_t progPortCount;
 uint8_t progFlag;
 
 uint16_t lockPortCount;
+uint16_t switchAutoEventCount;
 
 void initProgPort(void)
 {
@@ -26,28 +27,47 @@ void clkReceiverProgPort(void)
 {
 	if (progPortCount) progPortCount--;
 	if (lockPortCount > 1) lockPortCount--;
+	if (switchAutoEventCount > 1) switchAutoEventCount--;
 }
 
 void taskProgMode(void)
 {
-	if ((getConfigureBytes() & CONFIG_LOCKMODE_MASK) != 0) {
+	if ((getConfigureBytes() & CONFIG_SENSORMODE_MASK) != 0) {
 		if (PORTA.IN & PIN2_bm) {
-			lockPortCount = getLockTime();
+			if (getConfigureBytes() & CONFIG_SENSORMODE_LOCK_MASK) {
+				lockPortCount = getLockTime();
+			}
+			switchAutoEventCount = getAutoMoveTime();
+			if ((switchAutoEventCount < lockPortCount) && (switchAutoEventCount > 0)) {
+				switchAutoEventCount = lockPortCount;
+			}
+			
 		}
 		
 		if (lockPortCount == 1) {
-			// Lock release Event
 			lockPortCount = 0;
-			if ((getConfigureBytes() & CONFIG_LOCKMODE_MASK) == CONFIG_LOCKMODE_AUTO_C) {
+		}
+		
+		if (switchAutoEventCount == 1) {
+			// automove Event
+			switchAutoEventCount = 0;
+			if ((getConfigureBytes() & CONFIG_SENSORMODE_MASK) == CONFIG_SENSORMODE_LOCK_AUTO_C) {
 				setSwitch(SW_DIR_CLOSE, getTurnOnTime());
-			} else if ((getConfigureBytes() & CONFIG_LOCKMODE_MASK) == CONFIG_LOCKMODE_AUTO_T) {
+			} else if ((getConfigureBytes() & CONFIG_SENSORMODE_MASK) == CONFIG_SENSORMODE_NONLOCK_AUTO_C) {
+				setSwitch(SW_DIR_CLOSE, getTurnOnTime());
+			} else if ((getConfigureBytes() & CONFIG_SENSORMODE_MASK) == CONFIG_SENSORMODE_LOCK_AUTO_T) {
 				setSwitch(SW_DIR_THROWN, getTurnOnTime());
-			} else if ((getConfigureBytes() & CONFIG_LOCKMODE_MASK) == CONFIG_LOCKMODE_AUTOCHANGE) {
+			} else if ((getConfigureBytes() & CONFIG_SENSORMODE_MASK) == CONFIG_SENSORMODE_NONLOCK_AUTO_T) {
+				setSwitch(SW_DIR_THROWN, getTurnOnTime());
+			} else if ((getConfigureBytes() & CONFIG_SENSORMODE_MASK) == CONFIG_SENSORMODE_LOCK_AUTOCHANGE) {
+				toggleSwitch(getTurnOnTime());
+			} else if ((getConfigureBytes() & CONFIG_SENSORMODE_MASK) == CONFIG_SENSORMODE_NONLOCK_AUTOCHANGE) {
 				toggleSwitch(getTurnOnTime());
 			}
 		}
 		return;
 	}
+	
 	if (progPortCount == 0) return;
 	if (getConfigureBytes() & CONFIG_BIT_DISABLEPROGPORT) return;
 	
@@ -68,7 +88,7 @@ void clearProgMode(void)
 
 uint8_t readLockStat(void)
 {
-	if ((getConfigureBytes() & CONFIG_LOCKMODE_MASK) == 0) {
+	if ((getConfigureBytes() & CONFIG_SENSORMODE_MASK) == 0) {
 		// Lock ModeÇ™ñ≥å¯ÇÃèÍçáÅAÇ¢Ç©Ç»ÇÈèÍçáÇ≈Ç‡LockStat=DisableÇï‘Ç∑
 		return 0;
 	}
