@@ -13,4 +13,7 @@
   <tr><td>Motor Driver Backward Signal</td><td>PA5</td><td>Output</td><td>6</td><td>3</td></tr>
   <tr><td>Motor Driver PWM Signal</td><td>PB0</td><td>Output<br>(Timer A)</td><td>14</td><td>11</td></tr>
 
+  <tr><td>Turnout Direction LED Closed (LED+)</td><td>PC2</td><td>Output</td><td>17</td><td>14</td></tr>
+  <tr><td>Turnout Direction LED Thrown (LED-)</td><td>PC3</td><td>Output</td><td>18</td><td>15</td></tr>
+
 </table>
