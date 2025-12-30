@@ -17,6 +17,7 @@
 
 #include "sw_config.h"
 #include "sw_driver.h"
+#include "sw_led.h"
 
 int main(void)
 {
@@ -30,6 +31,7 @@ int main(void)
 	initProgPort();
 	initDCCpoller();
 	initSWdriver();
+	initLEDdriver();
 	
 	initConfig();
 	

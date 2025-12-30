@@ -22,6 +22,7 @@ uint8_t __attribute__((section(".eeprom"))) val[] =
 	0x07,	// Lock Time High-Byte	(0x07D0 = 3000 / 2.000sec)
 	0x88,	// Switch Auto-Move Time Low-Byte
 	0x13,	// Switch Auto-Move Time High-Byte (0x1388 = 5000 / 5.000sec)
+	0x01,	// Switch Direction LED enable/disable (0=disable / 1=enable)
 };
 
 uint8_t addrInfo[2];
@@ -32,7 +33,9 @@ uint8_t configureBits;
 uint8_t SwitchLockTime[2];
 uint8_t SwitchAutoMoveTime[2];
 
-#define FIRMWARE_VERSION_CODE	4
+uint8_t SwitchLEDenable;
+
+#define FIRMWARE_VERSION_CODE	5
 #define MANUFACTURE_ID	13
 
 uint8_t addr_1byte_write_cache;
@@ -65,6 +68,7 @@ void initCV(void)
 	write_eeprom(9, 0x07);
 	write_eeprom(10, 0x88);
 	write_eeprom(11, 0x13);
+	write_eeprom(12, 0x01);
 	
 	// Write Init Flag
 	write_eeprom(0, 0);
@@ -121,10 +125,12 @@ uint8_t loadCVevent(void)
 		SwitchAutoMoveTime[0] = read_cv_raw(10);
 	} else if (cvReadCount == 10) {
 		SwitchAutoMoveTime[1] = read_cv_raw(11);
+	} else if (cvReadCount == 11) {
+		SwitchLEDenable = read_cv_raw(12);
 	}
 	
 	cvReadCount++;
-	if (cvReadCount > 10) {
+	if (cvReadCount > 11) {
 		return 0;
 	} 
 	return 1;
@@ -159,6 +165,8 @@ uint8_t read_cv_byte(uint16_t CVnum)
 			return SwitchAutoMoveTime[0];
 		case 42:
 			return SwitchAutoMoveTime[1];
+		case 43:
+			return SwitchLEDenable;
 	}
 	
 	return 0xFF;
@@ -232,6 +240,11 @@ void write_cv_byte(uint16_t CVnum, uint8_t data)
 		case 42:
 			SwitchAutoMoveTime[1] = data;
 			eepromAddr = 11;
+			break;
+		case 43:
+			// Switch Direction LED enable or disable
+			SwitchLEDenable = data;
+			eepromAddr = 12;
 			break;
 	}
 	
@@ -311,4 +324,9 @@ uint16_t getLockTime(void)
 uint16_t getAutoMoveTime(void)
 {
 	return (uint16_t)(SwitchAutoMoveTime[1] << 8) + SwitchAutoMoveTime[0];
+}
+
+uint8_t getDirectionLEDenable(void)
+{
+	return (SwitchLEDenable);
 }

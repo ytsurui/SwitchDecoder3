@@ -22,6 +22,8 @@ uint8_t getConfigureBytes(void);
 uint16_t getLockTime(void);
 uint16_t getAutoMoveTime(void);
 
+uint8_t getDirectionLEDenable(void);
+
 #define CONFIG_BIT_REVERSE			0x01
 #define CONFIG_BIT_DISABLEPROGPORT	0x02
 

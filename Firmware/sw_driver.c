@@ -8,6 +8,7 @@
 #include <avr/io.h>
 #include "sw_driver.h"
 #include "sw_config.h"
+#include "sw_led.h"
 #include "prog_port.h"
 
 uint16_t switchTimerCounter = 0;
@@ -106,6 +107,8 @@ void setSwitch(uint8_t dir, uint16_t ms)
 			lastSwitchStat = LAST_SWITCH_STAT_T;
 		}
 	}
+	
+	setLED(dir);
 	
 	delayTimer = getTurnOnDelayTime();
 	if (delayTimer == 0) {
