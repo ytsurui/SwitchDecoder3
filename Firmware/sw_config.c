@@ -13,7 +13,7 @@ uint8_t __attribute__((section(".eeprom"))) val[] =
 	0xFF,	// Configure Area
 	0x81,	// Addr1 (Low)
 	0xF8,	// Addr2 (High)
-	0xC8,	// Turn-On Time Low-Byte
+	0x3F,	// Turn-On Time Low-Byte
 	0x00,	// Turn-On Time High-Byte
 	0x00,	// Turn-On Delay Time Low-Byte
 	0x00,	// Turn-On Delay Time High-Byte
@@ -59,7 +59,7 @@ void initCV(void)
 {
 	write_eeprom(1, 0x81);
 	write_eeprom(2, 0xF8);
-	write_eeprom(3, 0xC8);
+	write_eeprom(3, 0x3F);
 	write_eeprom(4, 0x00);
 	write_eeprom(5, 0x00);
 	write_eeprom(6, 0x00);
